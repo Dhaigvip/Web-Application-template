@@ -1,0 +1,49 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: webshop-postgres
+    environment:
+      POSTGRES_DB: webshop
+      POSTGRES_USER: webshop
+      POSTGRES_PASSWORD: webshop
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "55432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U webshop"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  server:
+    build:
+      context: ./server
+    container_name: webshop-api
+    environment:
+      API_PORT: 4100
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: webshop
+      DB_USER: webshop
+      DB_PASSWORD: webshop
+      DATABASE_URL: postgresql://webshop:webshop@postgres:5432/webshop
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "4100:4100"
+
+  client:
+    build:
+      context: ./client
+    container_name: webshop-client
+    depends_on:
+      - server
+    ports:
+      - "5173:80"
+
+volumes:
+  postgres_data:
