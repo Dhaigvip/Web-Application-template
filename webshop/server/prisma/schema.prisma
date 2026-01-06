@@ -1,15 +1,115 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+enum AttributeType {
+  ENUM
+  NUMBER
+  BOOLEAN
+  TEXT
+}
+
+model Product {
+  id          String   @id @default(uuid())
+  slug        String   @unique
+  name        String
+  description String?
+  isActive    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  categories ProductCategory[]
+  attributes ProductAttribute[]
+
+  @@index([isActive])
+}
+
+model Category {
+  id       String     @id @default(uuid())
+  parentId String?
+  parent   Category?  @relation("CategoryParent", fields: [parentId], references: [id], onDelete: Restrict)
+  children Category[] @relation("CategoryParent")
+
+  slug      String
+  name      String
+  path      String  @unique
+  level     Int
+  sortOrder Int     @default(0)
+  isActive  Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  products ProductCategory[]
+
+  @@index([parentId])
+  @@index([slug])
+  @@index([path])
+}
+
+model ProductCategory {
+  productId  String
+  categoryId String
+  isPrimary  Boolean @default(false)
+
+  product  Product  @relation(fields: [productId], references: [id], onDelete: Restrict)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+
+  @@id([productId, categoryId])
+  @@index([categoryId, productId])
+  @@index([productId, categoryId])
+}
+
+model Attribute {
+  id           String        @id @default(uuid())
+  code         String        @unique
+  name         String
+  type         AttributeType
+  isFilterable Boolean       @default(true)
+  isFacetable  Boolean       @default(true)
+  sortOrder    Int           @default(0)
+  createdAt    DateTime      @default(now())
+
+  values   AttributeValue[]
+  products ProductAttribute[]
+
+  @@index([code])
+}
+
+model AttributeValue {
+  id          String @id @default(uuid())
+  attributeId String
+  value       String
+  label       String
+  sortOrder   Int    @default(0)
+
+  attribute Attribute          @relation(fields: [attributeId], references: [id], onDelete: Restrict)
+  products  ProductAttribute[]
+
+  @@unique([attributeId, value])
+  @@index([attributeId])
+}
+
+model ProductAttribute {
+  productId        String
+  attributeId      String
+  attributeValueId String?
+  valueNumber      Float?
+  valueBoolean     Boolean?
+  valueText        String?
+
+  product        Product         @relation(fields: [productId], references: [id], onDelete: Restrict)
+  attribute      Attribute       @relation(fields: [attributeId], references: [id], onDelete: Restrict)
+  attributeValue AttributeValue? @relation(fields: [attributeValueId], references: [id], onDelete: Restrict)
+
+  @@id([productId, attributeId])
+  @@index([attributeId])
+  @@index([attributeId, attributeValueId])
+  @@index([attributeId, valueNumber])
+  @@index([productId])
 }
