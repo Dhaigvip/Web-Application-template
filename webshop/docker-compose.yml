@@ -23,7 +23,7 @@ services:
       context: ./server
     container_name: webshop-api
     environment:
-      API_PORT: 4100
+      API_PORT: 4200
       DB_HOST: postgres
       DB_PORT: 5432
       DB_NAME: webshop
@@ -34,7 +34,7 @@ services:
       postgres:
         condition: service_healthy
     ports:
-      - "4100:4100"
+      - "4200:4200"
 
   client:
     build:

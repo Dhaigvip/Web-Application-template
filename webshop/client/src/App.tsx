@@ -1,9 +1,33 @@
-function App() {
+import { BrowserRouter, Routes, Route, Navigate, useParams } from "react-router-dom";
+import { ProductListPage } from "./pages/ProductListPage";
+import { ProductDetailPage } from "./pages/ProductDetailPage";
+
+export function App() {
     return (
-        <>
-            <div>Hello World</div>
-        </>
+        <BrowserRouter>
+            <Routes>
+                {/* Home = all products */}
+                <Route path="/" element={<ProductListPage />} />
+
+                {/* Category listing (deep paths supported) */}
+                <Route path="/category/:path*" element={<CategoryRoute />} />
+
+                {/* Product PDP */}
+                <Route path="/product/:slug" element={<ProductRoute />} />
+
+                {/* Fallback */}
+                <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+        </BrowserRouter>
     );
 }
 
-export default App;
+function CategoryRoute() {
+    const params = useParams<{ path?: string }>();
+    return <ProductListPage categoryPath={params.path} />;
+}
+
+function ProductRoute() {
+    const params = useParams<{ slug: string }>();
+    return <ProductDetailPage slug={params.slug} />;
+}
