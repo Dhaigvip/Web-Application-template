@@ -1,15 +1,22 @@
 const API_BASE = import.meta.env.VITE_API_BASE_URL;
+const API_VERSION = "v2";
 
 export async function http<T>(input: string, init: RequestInit = {}): Promise<T> {
     const token = localStorage.getItem("admin_token");
 
-    const res = await fetch(`${API_BASE}${input}`, {
+    const headers: Record<string, string> = {
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...(init.headers as Record<string, string> ?? {})
+    };
+
+    // Only set Content-Type for non-FormData requests
+    if (!(init.body instanceof FormData)) {
+        headers["Content-Type"] = "application/json";
+    }
+
+    const res = await fetch(`${API_BASE}/${API_VERSION}${input}`, {
         ...init,
-        headers: {
-            "Content-Type": "application/json",
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-            ...(init.headers ?? {})
-        }
+        headers
     });
 
     if (!res.ok) {

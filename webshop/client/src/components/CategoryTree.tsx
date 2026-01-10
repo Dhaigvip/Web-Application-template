@@ -19,20 +19,21 @@ export function CategoryTree(props: CategoryTreeProps) {
     const { data, loading, error } = useCategories();
 
     if (loading) {
-        return <div>Loading categories…</div>;
+        return <div className="text-gray-600">Loading categories…</div>;
     }
 
     if (error) {
-        return <div>Failed to load categories.</div>;
+        return <div className="text-red-600">Failed to load categories.</div>;
     }
 
     if (!data || data.length === 0) {
-        return <div>No categories.</div>;
+        return <div className="text-gray-600">No categories.</div>;
     }
 
     return (
-        <nav aria-label="Categories">
-            <ul>
+        <nav aria-label="Categories" className="bg-white rounded-lg shadow-sm p-4 border border-gray-200">
+            <h3 className="text-lg font-semibold mb-3 text-gray-900">Categories</h3>
+            <ul className="space-y-1">
                 {data.map((node) => (
                     <CategoryNode
                         key={node.path}
@@ -62,13 +63,22 @@ function CategoryNode({ node, onSelect, selectedPath }: CategoryNodeProps) {
     return (
         <li>
             <div>
-                <button type="button" onClick={handleClick} aria-current={isSelected ? "true" : undefined}>
+                <button 
+                    type="button" 
+                    onClick={handleClick} 
+                    aria-current={isSelected ? "true" : undefined}
+                    className={`w-full text-left px-3 py-2 rounded-md transition-colors ${
+                        isSelected 
+                            ? "bg-blue-100 text-blue-700 font-medium" 
+                            : "text-gray-700 hover:bg-gray-100"
+                    }`}
+                >
                     {node.name}
                 </button>
             </div>
 
             {node.children.length > 0 && (
-                <ul>
+                <ul className="ml-4 mt-1 space-y-1 border-l-2 border-gray-200 pl-2">
                     {node.children.map((child) => (
                         <CategoryNode key={child.path} node={child} onSelect={onSelect} selectedPath={selectedPath} />
                     ))}

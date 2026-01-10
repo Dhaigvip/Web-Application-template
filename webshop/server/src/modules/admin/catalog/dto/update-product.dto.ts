@@ -8,4 +8,8 @@ export class UpdateProductDto {
     @IsOptional()
     @IsString()
     description?: string;
+
+    @IsOptional()
+    @IsString()
+    imageUrl?: string | null;
 }

@@ -1,7 +1,9 @@
+
 export function HomePage() {
     return (
         <div style={{ padding: 24 }}>
             <h1>Welcome</h1>
+            <h1 className="text-red-500">Tailwind works</h1>
             <p>Select an area to continue:</p>
 
             <ul>

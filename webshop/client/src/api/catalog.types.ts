@@ -18,6 +18,7 @@ export type CatalogProductListItem = {
     slug: string;
     name: string;
     description: string | null;
+    imageUrl: string | null;
 };
 
 export type CatalogPagination = {
@@ -68,6 +69,7 @@ export type CatalogProductPdp = {
     slug: string;
     name: string;
     description: string | null;
+    imageUrl: string | null;
 };
 
 export type CatalogProductPdpResponse = {

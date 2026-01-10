@@ -30,6 +30,7 @@ export interface AdminProductDetailDto {
     name: string;
     description: string | null;
     isActive: boolean;
+    imageUrl: string | null;
 
     categories: {
         id: string;
@@ -60,7 +61,7 @@ export function getAdminProduct(id: string) {
 }
 
 // --- COMMANDS ---
-export function updateAdminProduct(id: string, dto: { name?: string; description?: string }) {
+export function updateAdminProduct(id: string, dto: { name?: string; description?: string; imageUrl?: string }) {
     return http<void>(`/api/admin/catalog/products/${id}`, {
         method: "PATCH",
         body: JSON.stringify(dto)
@@ -154,3 +155,17 @@ export function deleteAdminCategory(id: string) {
         method: "DELETE"
     });
 }
+
+export function uploadAdminProductImage(productId: string, file: File) {
+    const form = new FormData();
+    form.append("file", file);
+
+    return http<{ id: string; imageUrl: string }>(
+        `/api/admin/catalog/products/${productId}/image`,
+        {
+            method: "POST",
+            body: form
+        }
+    );
+}
+

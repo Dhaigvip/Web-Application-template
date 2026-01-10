@@ -20,7 +20,7 @@ export function FacetFilters({ facets, value, onChange }: FacetFiltersProps) {
     const attributeEntries = Object.entries(facets);
 
     if (attributeEntries.length === 0) {
-        return <div>No filters available.</div>;
+        return <div className="text-gray-600">No filters available.</div>;
     }
 
     function toggleValue(attributeCode: string, facetValue: string) {
@@ -41,25 +41,26 @@ export function FacetFilters({ facets, value, onChange }: FacetFiltersProps) {
     }
 
     return (
-        <div>
+        <div className="bg-white rounded-lg shadow-sm p-4 border border-gray-200">
             {attributeEntries.map(([attributeCode, values]) => (
-                <fieldset key={attributeCode} style={{ marginBottom: "1rem" }}>
-                    <legend style={{ fontWeight: "bold" }}>{attributeCode}</legend>
+                <fieldset key={attributeCode} className="mb-4 last:mb-0">
+                    <legend className="font-semibold text-gray-900 mb-2 capitalize">{attributeCode}</legend>
 
-                    <ul style={{ listStyle: "none", padding: 0 }}>
+                    <ul className="space-y-2">
                         {values.map((v) => {
                             const checked = (value[attributeCode] ?? []).includes(v.value);
 
                             return (
                                 <li key={v.value}>
-                                    <label style={{ display: "flex", gap: "0.5rem" }}>
+                                    <label className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded transition-colors">
                                         <input
                                             type="checkbox"
                                             checked={checked}
                                             onChange={() => toggleValue(attributeCode, v.value)}
+                                            className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
                                         />
-                                        <span>
-                                            {v.value} ({v.count})
+                                        <span className="text-sm text-gray-700">
+                                            {v.value} <span className="text-gray-500">({v.count})</span>
                                         </span>
                                     </label>
                                 </li>

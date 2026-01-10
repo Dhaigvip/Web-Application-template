@@ -23,6 +23,7 @@ let AdminCatalogService = class AdminCatalogService {
                 slug: dto.slug,
                 name: dto.name,
                 description: dto.description,
+                imageUrl: dto.imageUrl ?? null,
                 isActive: false
             }
         });
@@ -30,7 +31,7 @@ let AdminCatalogService = class AdminCatalogService {
     async updateProduct(id, dto) {
         return this.prisma.product.update({
             where: { id },
-            data: dto
+            data: { ...dto }
         });
     }
     async assignCategory(productId, dto) {
@@ -147,6 +148,21 @@ let AdminCatalogService = class AdminCatalogService {
                 sortOrder: dto.sortOrder ?? 0
             }
         });
+    }
+    async updateCategory(id, dto) {
+        return this.prisma.category.update({
+            where: { id },
+            data: dto
+        });
+    }
+    async deleteCategory(id) {
+        const children = await this.prisma.category.findMany({
+            where: { parentId: id }
+        });
+        if (children.length > 0) {
+            throw new common_1.BadRequestException("Category has children and cannot be deleted");
+        }
+        return this.prisma.category.delete({ where: { id } });
     }
 };
 exports.AdminCatalogService = AdminCatalogService;

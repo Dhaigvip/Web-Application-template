@@ -29,26 +29,44 @@ export function AdminLoginPage() {
     }
 
     return (
-        <div style={{ maxWidth: 360, margin: "80px auto" }}>
-            <h1>Admin Login</h1>
+        <div className="min-h-screen flex items-center justify-center bg-gray-100">
+            <div className="bg-white p-8 rounded shadow w-full max-w-sm">
+                <h1 className="text-2xl font-semibold text-center mb-6">Admin Login</h1>
 
-            <form onSubmit={onSubmit}>
-                <div>
-                    <label>Email</label>
-                    <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-                </div>
+                <form onSubmit={onSubmit} className="space-y-4">
+                    <div>
+                        <label className="block text-sm font-medium mb-1">Email</label>
+                        <input
+                            type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            className="border rounded px-3 py-2 w-full focus:ring focus:ring-blue-300"
+                            required
+                        />
+                    </div>
 
-                <div>
-                    <label>Password</label>
-                    <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-                </div>
+                    <div>
+                        <label className="block text-sm font-medium mb-1">Password</label>
+                        <input
+                            type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            className="border rounded px-3 py-2 w-full focus:ring focus:ring-blue-300"
+                            required
+                        />
+                    </div>
 
-                {error && <p style={{ color: "red" }}>{error}</p>}
+                    {error && <p className="text-red-600 text-sm">{error}</p>}
 
-                <button type="submit" disabled={loading}>
-                    {loading ? "Logging in…" : "Login"}
-                </button>
-            </form>
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+                    >
+                        {loading ? "Logging in…" : "Login"}
+                    </button>
+                </form>
+            </div>
         </div>
     );
 }

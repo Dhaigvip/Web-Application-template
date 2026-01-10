@@ -4,6 +4,7 @@ import { useAdminCategories } from "../hooks/useAdminCategories";
 import { CategoryPicker } from "../components/CategoryPicker";
 import { updateAdminCategory, deleteAdminCategory } from "../api/adminCatalog.api";
 import type { AdminCategoryTreeNodeDto } from "../api/adminCatalog.api";
+import { SplitSidebarLayout } from "../layout/SplitSidebarLayout";
 
 function slugify(value: string) {
     return value
@@ -144,58 +145,74 @@ export function AdminCategoryManagerPage() {
     }
 
     return (
-        <div style={{ padding: 24, maxWidth: 600 }}>
-            <h1>Edit Category</h1>
+        <SplitSidebarLayout
+            sidebar={
+                <>
+                    <h2 className="text-lg font-semibold mb-4">Categories</h2>
 
-            {(error || loadError) && <div style={{ color: "red", marginBottom: 12 }}>{error || loadError}</div>}
+                    {loading && <p>Loading categories…</p>}
+                    {loadError && <p className="text-red-600">{loadError}</p>}
 
-            <div style={{ marginBottom: 12 }}>
-                <label>Name</label>
-                <input value={name} onChange={(e) => setName(e.target.value)} style={{ width: "100%" }} />
+                    {categories && (
+                        <CategoryPicker nodes={categories} selectedPath={parentPath} onSelect={setParentPath} />
+                    )}
+                </>
+            }
+        >
+            <div className="space-y-6 max-w-2xl">
+                <h1 className="text-2xl font-semibold">Edit Category</h1>
+
+                {(error || loadError) && <div className="text-red-600">{error || loadError}</div>}
+
+                <div className="bg-white p-6 rounded shadow space-y-4">
+                    <div>
+                        <label className="block font-medium mb-1">Name</label>
+                        <input
+                            className="border rounded px-3 py-2 w-full"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block font-medium mb-1">Slug</label>
+                        <input
+                            className="border rounded px-3 py-2 w-full"
+                            value={slugValue}
+                            onChange={(e) => setSlugValue(slugify(e.target.value))}
+                        />
+                    </div>
+
+                    <div>
+                        <label className="flex items-center gap-2">
+                            <input type="checkbox" checked={isActive} onChange={(e) => setIsActive(e.target.checked)} />
+                            Active
+                        </label>
+                    </div>
+
+                    <div className="flex gap-3 pt-4">
+                        <button
+                            onClick={handleDelete}
+                            disabled={saving}
+                            className="bg-red-100 text-red-700 px-4 py-2 rounded"
+                        >
+                            Delete
+                        </button>
+
+                        <button
+                            onClick={() => navigate("/admin/categories")}
+                            disabled={saving}
+                            className="border px-4 py-2 rounded"
+                        >
+                            Cancel
+                        </button>
+
+                        <button onClick={submit} disabled={saving} className="bg-blue-600 text-white px-4 py-2 rounded">
+                            {saving ? "Saving…" : "Save"}
+                        </button>
+                    </div>
+                </div>
             </div>
-
-            <div style={{ marginBottom: 12 }}>
-                <label>Slug (last segment)</label>
-                <input
-                    value={slugValue}
-                    onChange={(e) => setSlugValue(slugify(e.target.value))}
-                    style={{ width: "100%" }}
-                />
-                <small style={{ color: "#666" }}>
-                    Full path: {parentPath ? `${parentPath}/` : ""}
-                    {slugValue}
-                </small>
-            </div>
-
-            <div style={{ marginBottom: 12 }}>
-                <label>
-                    <input
-                        type="checkbox"
-                        checked={isActive}
-                        onChange={(e) => setIsActive(e.target.checked)}
-                        style={{ marginRight: 8 }}
-                    />
-                    Active
-                </label>
-            </div>
-
-            <h2>Parent Category</h2>
-
-            {categories && <CategoryPicker nodes={categories} selectedPath={parentPath} onSelect={setParentPath} />}
-
-            <div style={{ marginTop: 24 }}>
-                <button onClick={handleDelete} disabled={saving} style={{ marginRight: 8, color: "red" }}>
-                    Delete
-                </button>
-
-                <button onClick={() => navigate("/admin/categories")} disabled={saving} style={{ marginRight: 8 }}>
-                    Cancel
-                </button>
-
-                <button onClick={submit} disabled={saving || !name.trim() || !slugValue.trim()}>
-                    {saving ? "Saving…" : "Save Changes"}
-                </button>
-            </div>
-        </div>
+        </SplitSidebarLayout>
     );
 }

@@ -84,7 +84,7 @@ export class ProductService {
     // PDP HELPERS
     // ---------------------------
 
-    async getProductBySlug(slug: string, opts?: { includeInactive?: boolean }) {
+    async getProductBySlug(slug: string, opts?: { includeInactive?: boolean, apiVersion: 1 | 2 }) {
         const includeInactive = opts?.includeInactive ?? false;
 
         const product = await this.prisma.product.findFirst({
@@ -94,6 +94,7 @@ export class ProductService {
                 slug: true,
                 name: true,
                 description: true,
+                imageUrl: opts?.apiVersion === 2 ? true : false,
                 categories: {
                     select: {
                         isPrimary: true,

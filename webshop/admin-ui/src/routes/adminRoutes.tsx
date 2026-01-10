@@ -7,10 +7,13 @@ import { AdminCreateCategoryPage } from "../pages/AdminCreateCategoryPage";
 import { AdminCategoryListPage } from "../pages/AdminCategoryListPage";
 import { AdminCategoryManagerPage } from "../pages/AdminCategoryManagerPage";
 import { HomePage } from "../pages/HomePage";
+import { AdminLoginPage } from "../pages/AdminLoginPage";
 
 export const adminRoutes = (
     <>
         <Route path="/" element={<HomePage />} />
+
+        <Route path="/admin/login" element={<AdminLoginPage />} />
 
         <Route element={<AdminGuard />}>
             <Route path="/admin/products" element={<AdminProductListPage />} />

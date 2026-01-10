@@ -3,6 +3,11 @@ import "dotenv/config";
 import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
 import { ValidationPipe } from "@nestjs/common";
+import { VersioningType } from "@nestjs/common";
+import { NestExpressApplication } from "@nestjs/platform-express";
+import { join } from "path/win32";
+import { ensureUploadDirs } from "./common/uploads/uploads.init";
+import { VersionInterceptor } from "./common/interceptors/version.interceptor";
 
 function getCorsOrigins(): string[] | boolean {
     const raw = process.env.CORS_ORIGINS;
@@ -21,13 +26,31 @@ function getCorsOrigins(): string[] | boolean {
 }
 
 async function bootstrap() {
-    const app = await NestFactory.create(AppModule);
-    const raw = process.env.CORS_ORIGINS;
+    const app = await NestFactory.create<NestExpressApplication>(AppModule);
+
+    // ✅ Increase body size limits (for file uploads, large payloads)
+    app.use(require('express').json({ limit: '50mb' }));
+    app.use(require('express').urlencoded({ limit: '50mb', extended: true }));
+
+    // ✅ API versioning (/v1, /v2)
+    app.enableVersioning({
+        type: VersioningType.URI,
+        defaultVersion: "1"
+    });
+
+    // ✅ Extract version from URL and add to request
+    app.useGlobalInterceptors(new VersionInterceptor());
+
+    ensureUploadDirs();
+
+    // ✅ serve uploaded files
+    const uploadDir = process.env.UPLOAD_DIR ?? "uploads";
+    app.useStaticAssets(join(process.cwd(), uploadDir), { prefix: "/uploads" });
 
     app.useGlobalPipes(
         new ValidationPipe({
-            transform: true, // strings → numbers
-            whitelist: true, // strip unknown fields
+            transform: true,
+            whitelist: true,
             forbidNonWhitelisted: false
         })
     );

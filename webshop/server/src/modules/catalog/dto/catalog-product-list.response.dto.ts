@@ -3,6 +3,7 @@ export class CatalogProductListItemDto {
     slug!: string;
     name!: string;
     description!: string | null;
+    imageUrl?: string;
 }
 
 export class CatalogPaginationDto {

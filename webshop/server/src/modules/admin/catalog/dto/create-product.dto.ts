@@ -12,4 +12,10 @@ export class CreateProductDto {
     @IsString()
     @IsOptional()
     description?: string;
+
+    @IsOptional()
+    @IsString()
+    // If you want strict URL validation:
+    // @IsUrl({ require_tld: false })
+    imageUrl?: string;
 }

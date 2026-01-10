@@ -34,12 +34,13 @@ let CatalogController = class CatalogController {
             sort: query.sort,
             page: query.page,
             pageSize: query.pageSize,
-            includeInactive
+            includeInactive,
+            apiVersion: 1
         });
     }
     getProduct(req, slug) {
         const includeInactive = Boolean(req.visibility?.includeInactive);
-        return this.catalogService.getProductBySlug(slug, { includeInactive });
+        return this.catalogService.getProductBySlug(slug, { includeInactive, apiVersion: 1 });
     }
     getCategories(req) {
         const includeInactive = Boolean(req.visibility?.includeInactive);
@@ -72,6 +73,9 @@ __decorate([
 ], CatalogController.prototype, "getCategories", null);
 exports.CatalogController = CatalogController = __decorate([
     (0, common_1.UseGuards)(visibility_guard_1.VisibilityGuard),
-    (0, common_1.Controller)("api/catalog"),
+    (0, common_1.Controller)({
+        path: "api/catalog",
+        version: "1"
+    }),
     __metadata("design:paramtypes", [catalog_service_1.CatalogService, category_service_1.CategoryService])
 ], CatalogController);

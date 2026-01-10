@@ -23,8 +23,9 @@ export function App() {
 }
 
 function CategoryRoute() {
-    const params = useParams<{ path?: string }>();
-    return <ProductListPage categoryPath={params.path} />;
+    const params = useParams<{ "*"?: string }>();
+    // The catch-all parameter is accessed as "*" not "path"
+    return <ProductListPage categoryPath={params["*"]} />;
 }
 
 function ProductRoute() {

@@ -3,7 +3,10 @@ import { Request } from "express";
 import { ENV_B2B_API_KEY, VISIBILITY_HEADER_API_KEY } from "./visibility.constants";
 import { VisibilityContext } from "./visibility.types";
 
-export type VisibilityRequest = Request & { visibility?: VisibilityContext };
+export type VisibilityRequest = Request & { 
+    visibility?: VisibilityContext;
+    version?: string;
+};
 
 @Injectable()
 export class VisibilityGuard implements CanActivate {

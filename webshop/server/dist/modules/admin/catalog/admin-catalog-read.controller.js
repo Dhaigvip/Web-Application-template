@@ -26,10 +26,10 @@ let AdminCatalogReadController = class AdminCatalogReadController {
         this.service = service;
     }
     getProducts(query) {
-        return this.service.getProductList(query);
+        return this.service.getProductList(query, { apiVersion: 1 });
     }
     getProduct(id) {
-        return this.service.getProductDetail(id);
+        return this.service.getProductDetail(id, { apiVersion: 1 });
     }
     getCategories() {
         return this.service.getCategoryTree();
@@ -71,6 +71,9 @@ __decorate([
 ], AdminCatalogReadController.prototype, "getAttributes", null);
 exports.AdminCatalogReadController = AdminCatalogReadController = __decorate([
     (0, common_1.UseGuards)(admin_jwt_guard_1.AdminJwtGuard, active_admin_guard_1.ActiveAdminGuard, roles_guard_1.RolesGuard),
-    (0, common_1.Controller)("api/admin/catalog"),
+    (0, common_1.Controller)({
+        path: "api/admin/catalog",
+        version: "1"
+    }),
     __metadata("design:paramtypes", [admin_catalog_read_service_1.AdminCatalogReadService])
 ], AdminCatalogReadController);

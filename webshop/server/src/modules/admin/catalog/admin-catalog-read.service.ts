@@ -11,7 +11,10 @@ import { AdminCategoryTreeNodeDto } from "./dto/admin-category-tree-node.dto";
 export class AdminCatalogReadService {
     constructor(private prisma: PrismaService) {}
 
-    async getProductList(query: AdminProductListQueryDto): Promise<AdminProductListResponseDto> {
+    async getProductList(
+        query: AdminProductListQueryDto,
+        opts?: { apiVersion: 1 | 2 }
+    ): Promise<AdminProductListResponseDto> {
         const page = query.page ?? 1;
         const pageSize = query.pageSize ?? 20;
 
@@ -58,6 +61,7 @@ export class AdminCatalogReadService {
                 slug: p.slug,
                 name: p.name,
                 isActive: p.isActive,
+                ...(opts?.apiVersion === 2 ? { imageUrl: p.imageUrl } : {}),
                 primaryCategoryPath: p.categories[0]?.category.path ?? null,
                 updatedAt: p.updatedAt
             })),
@@ -67,7 +71,7 @@ export class AdminCatalogReadService {
         };
     }
 
-    async getProductDetail(id: string): Promise<AdminProductDetailDto> {
+    async getProductDetail(id: string, opts?: { apiVersion: 1 | 2 }): Promise<AdminProductDetailDto> {
         const product = await this.prisma.product.findUnique({
             where: { id },
             include: {
@@ -91,6 +95,7 @@ export class AdminCatalogReadService {
             name: product.name,
             description: product.description,
             isActive: product.isActive,
+            ...(opts?.apiVersion === 2 ? { imageUrl: product.imageUrl } : {}),
 
             categories: product.categories.map((c) => ({
                 id: c.category.id,

@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
 import { useAdminCategories } from "../hooks/useAdminCategories";
 import type { AdminCategoryTreeNodeDto } from "../api/adminCatalog.api";
+import { SplitSidebarLayout } from "../layout/SplitSidebarLayout";
+import { CategoryPicker } from "../components/CategoryPicker";
 
 function CategoryTree({ nodes, level = 0 }: { nodes: AdminCategoryTreeNodeDto[]; level?: number }) {
     return (
@@ -24,22 +26,33 @@ export function AdminCategoryListPage() {
     const { categories, loading, error } = useAdminCategories();
 
     return (
-        <div style={{ padding: 24 }}>
-            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 16 }}>
-                <h1>Categories</h1>
+        <SplitSidebarLayout
+            sidebar={
+                <>
+                    <h2 className="text-lg font-semibold mb-4">Categories</h2>
 
-                <Link to="/admin/categories/new">
-                    <button>Create Category</button>
-                </Link>
+                    {loading && <p>Loading categories…</p>}
+                    {error && <p className="text-red-600">{error}</p>}
+
+                    {categories && <CategoryPicker nodes={categories} selectedPath={null} onSelect={() => {}} />}
+                </>
+            }
+        >
+            <div className="space-y-6">
+                <div className="flex justify-between items-center">
+                    <h1 className="text-2xl font-semibold">Category List</h1>
+
+                    <Link to="/admin/categories/new">
+                        <button className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                            Create Category
+                        </button>
+                    </Link>
+                </div>
+
+                {categories && categories.length === 0 && <p>No categories yet.</p>}
+
+                {categories && categories.length > 0 && <CategoryTree nodes={categories} />}
             </div>
-
-            {loading && <div>Loading categories…</div>}
-
-            {error && <div style={{ color: "red" }}>{error}</div>}
-
-            {categories && categories.length === 0 && <div>No categories yet.</div>}
-
-            {categories && categories.length > 0 && <CategoryTree nodes={categories} />}
-        </div>
+        </SplitSidebarLayout>
     );
 }

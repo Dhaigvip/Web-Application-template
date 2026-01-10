@@ -39,25 +39,35 @@ let CatalogService = class CatalogService {
         ]);
         const totalItems = await this.prisma.product.count({ where });
         const orderBy = this.products.applySorting(input.sort);
+        const select = {
+            id: true,
+            slug: true,
+            name: true,
+            description: true
+        };
+        if (input.apiVersion === 2) {
+            select.imageUrl = true;
+        }
         const rows = await this.prisma.product.findMany({
             where,
             orderBy,
             skip: (input.page - 1) * input.pageSize,
             take: input.pageSize,
-            select: {
-                id: true,
-                slug: true,
-                name: true,
-                description: true
-            }
+            select
         });
         return {
-            data: rows.map((p) => ({
-                id: p.id,
-                slug: p.slug,
-                name: p.name,
-                description: p.description
-            })),
+            data: rows.map((p) => {
+                const base = {
+                    id: p.id,
+                    slug: p.slug,
+                    name: p.name,
+                    description: p.description
+                };
+                if (input.apiVersion === 2) {
+                    base.imageUrl = p.imageUrl;
+                }
+                return base;
+            }),
             pagination: {
                 page: input.page,
                 pageSize: input.pageSize,
@@ -72,7 +82,10 @@ let CatalogService = class CatalogService {
     }
     async getProductBySlug(slug, opts) {
         const includeInactive = opts?.includeInactive ?? false;
-        const product = await this.products.getProductBySlug(slug, { includeInactive });
+        const product = await this.products.getProductBySlug(slug, {
+            includeInactive,
+            apiVersion: opts?.apiVersion ?? 1
+        });
         const primaryCategory = product.categories.find((c) => c.isPrimary)?.category;
         if (!primaryCategory) {
             throw new common_1.NotFoundException("PRIMARY_CATEGORY_NOT_FOUND");
@@ -90,7 +103,8 @@ let CatalogService = class CatalogService {
                 id: product.id,
                 slug: product.slug,
                 name: product.name,
-                description: product.description
+                description: product.description,
+                ...(opts?.apiVersion === 2 ? { imageUrl: product.imageUrl } : {})
             },
             breadcrumbs: breadcrumbs.map((b) => ({
                 path: b.path,

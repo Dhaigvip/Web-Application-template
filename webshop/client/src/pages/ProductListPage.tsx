@@ -61,55 +61,56 @@ export function ProductListPage({ categoryPath }: ProductListPageProps) {
     // ---------------------------
 
     return (
-        <div style={{ display: "flex", gap: "1rem" }}>
+        <div className="flex gap-4 p-6 min-h-screen bg-gray-50">
             {/* Sidebar */}
-            <aside style={{ width: "250px" }}>
+            <aside className="w-64 shrink-0">
                 <CategoryTree selectedPath={categoryPath} onSelect={handleCategorySelect} />
 
                 {data && (
-                    <div style={{ marginTop: "1.5rem" }}>
-                        <h3>Filters</h3>
+                    <div className="mt-6">
+                        <h3 className="text-lg font-semibold mb-3">Filters</h3>
                         <FacetFilters facets={data.facets.attributes} value={attributes} onChange={handleFacetChange} />
                     </div>
                 )}
             </aside>
 
             {/* Main content */}
-            <main style={{ flex: 1 }}>
-                {loading && <div>Loading products…</div>}
-                {error && <div>Failed to load products.</div>}
+            <main className="flex-1">
+                {loading && <div className="text-gray-600">Loading products…</div>}
+                {error && <div className="text-red-600">Failed to load products.</div>}
 
                 {!loading && !error && data && (
                     <>
                         {data.data.length === 0 ? (
-                            <div>No products found.</div>
+                            <div className="text-gray-600">No products found.</div>
                         ) : (
-                            <ul>
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                                 {data.data.map((product) => (
-                                    <li key={product.id}>
-                                        <Link to={`/product/${product.slug}`}>
-                                            <strong>{product.name}</strong>
+                                    <div key={product.id} className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow p-4 border border-gray-200">
+                                        <Link to={`/product/${product.slug}`} className="block">
+                                            <h3 className="font-semibold text-gray-900 mb-2 hover:text-blue-600 transition-colors">{product.name}</h3>
+                                            {product.description && (
+                                                <p className="text-sm text-gray-600 line-clamp-3">
+                                                    {product.description}
+                                                </p>
+                                            )}
                                         </Link>
-                                        {product.description && (
-                                            <div style={{ fontSize: "0.9em", color: "#666" }}>
-                                                {product.description}
-                                            </div>
-                                        )}
-                                    </li>
+                                    </div>
                                 ))}
-                            </ul>
+                            </div>
                         )}
 
-                        <div style={{ marginTop: "1rem" }}>
+                        <div className="mt-6 flex items-center justify-center gap-4">
                             <button
                                 type="button"
                                 disabled={page <= 1}
                                 onClick={() => setPage((p) => Math.max(1, p - 1))}
+                                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
                             >
                                 Previous
                             </button>
 
-                            <span style={{ margin: "0 0.5rem" }}>
+                            <span className="text-gray-700">
                                 Page {data.pagination.page} of {data.pagination.totalPages}
                             </span>
 
@@ -117,6 +118,7 @@ export function ProductListPage({ categoryPath }: ProductListPageProps) {
                                 type="button"
                                 disabled={page >= data.pagination.totalPages}
                                 onClick={() => setPage((p) => Math.min(data.pagination.totalPages, p + 1))}
+                                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
                             >
                                 Next
                             </button>

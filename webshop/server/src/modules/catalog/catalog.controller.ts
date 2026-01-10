@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Query, Req, UseGuards } from "@nestjs/common";
+import { Controller, Get, Param, Query, Req, UseGuards, Version } from "@nestjs/common";
 import { CatalogService } from "./catalog.service";
 import { CatalogProductsQueryDto } from "./dto/catalog-products.query.dto";
 import { CategoryService } from "./category.service";
@@ -12,12 +12,14 @@ import { VisibilityGuard, VisibilityRequest } from "../../common/visibility/visi
 export class CatalogController {
     constructor(private readonly catalogService: CatalogService, private readonly categoryService: CategoryService) {}
 
+    @Version(["1", "2"])
     @Get("products")
     getProducts(
         @Req() req: VisibilityRequest,
         @Query() query: CatalogProductsQueryDto
     ): Promise<CatalogProductListResponseDto> {
         const includeInactive = Boolean(req.visibility?.includeInactive);
+        const apiVersion = parseInt(req.version || "1") as 1 | 2;
 
         return this.catalogService.getProducts({
             category: query.category,
@@ -28,16 +30,20 @@ export class CatalogController {
             sort: query.sort,
             page: query.page,
             pageSize: query.pageSize,
-            includeInactive
+            includeInactive,
+            apiVersion
         });
     }
 
+    @Version(["1", "2"])
     @Get("products/:slug")
     getProduct(@Req() req: VisibilityRequest, @Param("slug") slug: string): Promise<CatalogProductPdpResponseDto> {
         const includeInactive = Boolean(req.visibility?.includeInactive);
-        return this.catalogService.getProductBySlug(slug, { includeInactive });
+        const apiVersion = parseInt(req.version || "1") as 1 | 2;
+        return this.catalogService.getProductBySlug(slug, { includeInactive, apiVersion });
     }
 
+    @Version(["1", "2"])
     @Get("categories")
     getCategories(@Req() req: VisibilityRequest): Promise<CatalogCategoryTreeNodeDto[]> {
         const includeInactive = Boolean(req.visibility?.includeInactive);

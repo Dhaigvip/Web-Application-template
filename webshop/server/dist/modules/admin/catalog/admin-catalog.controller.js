@@ -25,6 +25,7 @@ const update_product_dto_1 = require("./dto/update-product.dto");
 const assign_product_category_dto_1 = require("./dto/assign-product-category.dto");
 const set_product_attribute_dto_1 = require("./dto/set-product-attribute.dto");
 const create_category_dto_1 = require("./dto/create-category.dto");
+const update_category_dto_1 = require("./dto/update-category.dto");
 let AdminCatalogController = class AdminCatalogController {
     constructor(service) {
         this.service = service;
@@ -51,6 +52,12 @@ let AdminCatalogController = class AdminCatalogController {
     // CATEGORIES
     createCategory(dto) {
         return this.service.createCategory(dto);
+    }
+    updateCategory(id, dto) {
+        return this.service.updateCategory(id, dto);
+    }
+    deleteCategory(id) {
+        return this.service.deleteCategory(id);
     }
 };
 exports.AdminCatalogController = AdminCatalogController;
@@ -113,8 +120,28 @@ __decorate([
     __metadata("design:paramtypes", [create_category_dto_1.CreateCategoryDto]),
     __metadata("design:returntype", void 0)
 ], AdminCatalogController.prototype, "createCategory", null);
+__decorate([
+    (0, roles_decorator_1.Roles)(client_1.AdminRole.CATALOG_ADMIN),
+    (0, common_1.Put)("categories/:id"),
+    __param(0, (0, common_1.Param)("id")),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, update_category_dto_1.UpdateCategoryDto]),
+    __metadata("design:returntype", void 0)
+], AdminCatalogController.prototype, "updateCategory", null);
+__decorate([
+    (0, roles_decorator_1.Roles)(client_1.AdminRole.CATALOG_ADMIN),
+    (0, common_1.Delete)("categories/:id"),
+    __param(0, (0, common_1.Param)("id")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], AdminCatalogController.prototype, "deleteCategory", null);
 exports.AdminCatalogController = AdminCatalogController = __decorate([
     (0, common_1.UseGuards)(admin_jwt_guard_1.AdminJwtGuard, active_admin_guard_1.ActiveAdminGuard, roles_guard_1.RolesGuard),
-    (0, common_1.Controller)("api/admin/catalog"),
+    (0, common_1.Controller)({
+        path: "api/admin/catalog",
+        version: "1"
+    }),
     __metadata("design:paramtypes", [admin_catalog_service_1.AdminCatalogService])
 ], AdminCatalogController);

@@ -84,6 +84,7 @@ let ProductService = class ProductService {
                 slug: true,
                 name: true,
                 description: true,
+                imageUrl: opts?.apiVersion === 2 ? true : false,
                 categories: {
                     select: {
                         isPrimary: true,

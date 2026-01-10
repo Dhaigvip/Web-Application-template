@@ -46,18 +46,18 @@ function buildProductsSearchParams(query: CatalogProductsQuery): URLSearchParams
     return params;
 }
 
-export function fetchCategoryTree(options?: ApiCallOptions) {
-    return http<CatalogCategoryTreeNode[]>("/api/catalog/categories", { apiKey: options?.apiKey });
+export function fetchCategoryTree() {
+    return http<CatalogCategoryTreeNode[]>("/api/catalog/categories");
 }
 
-export function fetchProducts(query: CatalogProductsQuery, options?: ApiCallOptions) {
+export function fetchProducts(query: CatalogProductsQuery) {
     const params = buildProductsSearchParams(query);
     const qs = params.toString();
     const path = qs ? `/api/catalog/products?${qs}` : "/api/catalog/products";
-    return http<CatalogProductListResponse>(path, { apiKey: options?.apiKey });
+    return http<CatalogProductListResponse>(path);
 }
 
-export function fetchProductBySlug(slug: string, options?: ApiCallOptions) {
+export function fetchProductBySlug(slug: string) {
     const safeSlug = encodeURIComponent(slug);
-    return http<CatalogProductPdpResponse>(`/api/catalog/products/${safeSlug}`, { apiKey: options?.apiKey });
+    return http<CatalogProductPdpResponse>(`/api/catalog/products/${safeSlug}`);
 }

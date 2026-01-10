@@ -19,6 +19,7 @@ const admin_catalog_controller_1 = require("./catalog/admin-catalog.controller")
 const admin_catalog_read_controller_1 = require("./catalog/admin-catalog-read.controller");
 const admin_catalog_module_1 = require("./catalog/admin-catalog.module");
 const admin_auth_module_1 = require("./auth/admin-auth.module");
+const admin_catalog_read_service_1 = require("./catalog/admin-catalog-read.service");
 // src/modules/admin/admin.module.ts
 let AdminModule = class AdminModule {
 };
@@ -27,6 +28,6 @@ exports.AdminModule = AdminModule = __decorate([
     (0, common_1.Module)({
         imports: [admin_auth_module_1.AdminAuthModule, admin_catalog_module_1.AdminCatalogModule],
         controllers: [admin_auth_controller_1.AdminAuthController, admin_catalog_controller_1.AdminCatalogController, admin_catalog_read_controller_1.AdminCatalogReadController],
-        providers: [admin_auth_service_1.AdminAuthService, admin_catalog_service_1.AdminCatalogService, jwt_strategy_1.JwtStrategy, roles_guard_1.RolesGuard, active_admin_guard_1.ActiveAdminGuard, prisma_service_1.PrismaService]
+        providers: [admin_auth_service_1.AdminAuthService, admin_catalog_service_1.AdminCatalogService, admin_catalog_read_service_1.AdminCatalogReadService, jwt_strategy_1.JwtStrategy, roles_guard_1.RolesGuard, active_admin_guard_1.ActiveAdminGuard, prisma_service_1.PrismaService]
     })
 ], AdminModule);

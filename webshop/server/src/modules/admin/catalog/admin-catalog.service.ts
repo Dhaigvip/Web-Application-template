@@ -18,6 +18,7 @@ export class AdminCatalogService {
                 slug: dto.slug,
                 name: dto.name,
                 description: dto.description,
+                imageUrl: dto.imageUrl ?? null,
                 isActive: false
             }
         });
@@ -26,7 +27,7 @@ export class AdminCatalogService {
     async updateProduct(id: string, dto: UpdateProductDto) {
         return this.prisma.product.update({
             where: { id },
-            data: dto
+            data: { ...dto }
         });
     }
 

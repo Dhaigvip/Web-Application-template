@@ -1,0 +1,6 @@
+@import "tailwindcss";
+
+.gutter {
+    background-color: #e5e7eb;
+    cursor: col-resize;
+}

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { createAdminCategory } from "../api/adminCatalog.api";
 import { useAdminCategories } from "../hooks/useAdminCategories";
 import { CategoryPicker } from "../components/CategoryPicker";
+import { SplitSidebarLayout } from "../layout/SplitSidebarLayout";
 
 function slugify(value: string) {
     return value
@@ -52,47 +53,70 @@ export function AdminCreateCategoryPage() {
     }
 
     return (
-        <div style={{ padding: 24, maxWidth: 600 }}>
-            <h1>Create Category</h1>
+        <SplitSidebarLayout
+            sidebar={
+                <>
+                    <h2 className="text-lg font-semibold mb-4">Categories</h2>
 
-            {(error || loadError) && <div style={{ color: "red", marginBottom: 12 }}>{error || loadError}</div>}
+                    {loading && <p>Loading categories…</p>}
+                    {loadError && <p className="text-red-600">{loadError}</p>}
 
-            <div style={{ marginBottom: 12 }}>
-                <label>Name</label>
-                <input
-                    value={name}
-                    onChange={(e) => {
-                        const value = e.target.value;
-                        setName(value);
+                    {categories && (
+                        <CategoryPicker nodes={categories} selectedPath={parentPath} onSelect={setParentPath} />
+                    )}
+                </>
+            }
+        >
+            <div className="space-y-6 max-w-2xl">
+                <h1 className="text-2xl font-semibold">Create Category</h1>
 
-                        if (!slug) {
-                            setSlug(slugify(value));
-                        }
-                    }}
-                    style={{ width: "100%" }}
-                />
+                {(error || loadError) && <div className="text-red-600">{error || loadError}</div>}
+
+                <div className="bg-white p-6 rounded shadow space-y-4">
+                    <div>
+                        <label className="block font-medium mb-1">Name</label>
+                        <input
+                            className="border rounded px-3 py-2 w-full"
+                            value={name}
+                            onChange={(e) => {
+                                const value = e.target.value;
+                                setName(value);
+
+                                if (!slug) {
+                                    setSlug(slugify(value));
+                                }
+                            }}
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block font-medium mb-1">Slug</label>
+                        <input
+                            className="border rounded px-3 py-2 w-full"
+                            value={slug}
+                            onChange={(e) => setSlug(slugify(e.target.value))}
+                        />
+                    </div>
+
+                    <div className="flex gap-3 pt-4">
+                        <button
+                            onClick={() => navigate("/admin/categories")}
+                            disabled={saving}
+                            className="border px-4 py-2 rounded"
+                        >
+                            Cancel
+                        </button>
+
+                        <button
+                            onClick={submit}
+                            disabled={saving || !name.trim() || !slug.trim()}
+                            className="bg-blue-600 text-white px-4 py-2 rounded"
+                        >
+                            {saving ? "Creating…" : "Create"}
+                        </button>
+                    </div>
+                </div>
             </div>
-
-            <div style={{ marginBottom: 12 }}>
-                <label>Slug</label>
-                <input value={slug} onChange={(e) => setSlug(slugify(e.target.value))} style={{ width: "100%" }} />
-            </div>
-
-            <h2>Parent Category</h2>
-
-            {loading && <div>Loading categories…</div>}
-
-            {categories && <CategoryPicker nodes={categories} selectedPath={parentPath} onSelect={setParentPath} />}
-
-            <div style={{ marginTop: 24 }}>
-                <button onClick={() => navigate("/admin/categories")} disabled={saving} style={{ marginRight: 8 }}>
-                    Cancel
-                </button>
-
-                <button onClick={submit} disabled={saving || !name.trim() || !slug.trim()}>
-                    {saving ? "Creating…" : "Create"}
-                </button>
-            </div>
-        </div>
+        </SplitSidebarLayout>
     );
 }

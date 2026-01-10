@@ -17,7 +17,7 @@ let AdminCatalogReadService = class AdminCatalogReadService {
     constructor(prisma) {
         this.prisma = prisma;
     }
-    async getProductList(query) {
+    async getProductList(query, opts) {
         const page = query.page ?? 1;
         const pageSize = query.pageSize ?? 20;
         const where = {};
@@ -58,6 +58,7 @@ let AdminCatalogReadService = class AdminCatalogReadService {
                 slug: p.slug,
                 name: p.name,
                 isActive: p.isActive,
+                ...(opts?.apiVersion === 2 ? { imageUrl: p.imageUrl } : {}),
                 primaryCategoryPath: p.categories[0]?.category.path ?? null,
                 updatedAt: p.updatedAt
             })),
@@ -66,7 +67,7 @@ let AdminCatalogReadService = class AdminCatalogReadService {
             pageSize
         };
     }
-    async getProductDetail(id) {
+    async getProductDetail(id, opts) {
         const product = await this.prisma.product.findUnique({
             where: { id },
             include: {
@@ -89,6 +90,7 @@ let AdminCatalogReadService = class AdminCatalogReadService {
             name: product.name,
             description: product.description,
             isActive: product.isActive,
+            ...(opts?.apiVersion === 2 ? { imageUrl: product.imageUrl } : {}),
             categories: product.categories.map((c) => ({
                 id: c.category.id,
                 path: c.category.path,

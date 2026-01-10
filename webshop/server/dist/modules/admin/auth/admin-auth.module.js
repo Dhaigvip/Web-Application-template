@@ -23,7 +23,7 @@ exports.AdminAuthModule = AdminAuthModule = __decorate([
             passport_1.PassportModule,
             jwt_1.JwtModule.register({
                 secret: process.env.ADMIN_JWT_SECRET,
-                signOptions: { expiresIn: "15m" }
+                signOptions: { expiresIn: process.env.NODE_ENV === 'production' ? '15m' : '7d' }
             })
         ],
         controllers: [admin_auth_controller_1.AdminAuthController],
