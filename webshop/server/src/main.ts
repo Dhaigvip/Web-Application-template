@@ -8,6 +8,8 @@ import { NestExpressApplication } from "@nestjs/platform-express";
 import { join } from "path/win32";
 import { ensureUploadDirs } from "./common/uploads/uploads.init";
 import { VersionInterceptor } from "./common/interceptors/version.interceptor";
+import cookieParser from "cookie-parser";
+import * as bodyParser from "body-parser";
 
 function getCorsOrigins(): string[] | boolean {
     const raw = process.env.CORS_ORIGINS;
@@ -28,15 +30,21 @@ function getCorsOrigins(): string[] | boolean {
 async function bootstrap() {
     const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
+    app.use("/v2/api/payments/stripe/webhook", bodyParser.raw({ type: "*/*" }));
+
+    app.use(bodyParser.json());
+
     // ✅ Increase body size limits (for file uploads, large payloads)
-    app.use(require('express').json({ limit: '50mb' }));
-    app.use(require('express').urlencoded({ limit: '50mb', extended: true }));
+    app.use(require("express").json({ limit: "50mb" }));
+    app.use(require("express").urlencoded({ limit: "50mb", extended: true }));
 
     // ✅ API versioning (/v1, /v2)
     app.enableVersioning({
         type: VersioningType.URI,
         defaultVersion: "1"
     });
+
+    app.use(cookieParser());
 
     // ✅ Extract version from URL and add to request
     app.useGlobalInterceptors(new VersionInterceptor());

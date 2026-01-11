@@ -8,18 +8,6 @@ export type ProductDetailPageProps = {
     slug: string | undefined;
 };
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
-
-function getImageUrl(imageUrl: string | null): string | null {
-    if (!imageUrl) return null;
-    // If it's already a full URL, return as-is
-    if (imageUrl.startsWith("http://") || imageUrl.startsWith("https://")) {
-        return imageUrl;
-    }
-    // Otherwise, prepend the API base URL
-    return `${API_BASE}${imageUrl}`;
-}
-
 export function ProductDetailPage({ slug }: ProductDetailPageProps) {
     const { data, loading, error } = useProduct(slug);
 

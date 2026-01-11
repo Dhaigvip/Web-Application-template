@@ -10,7 +10,7 @@ export function App() {
                 <Route path="/" element={<ProductListPage />} />
 
                 {/* Category listing (deep paths supported) */}
-                <Route path="/category/:path*" element={<CategoryRoute />} />
+                <Route path="/category/*" element={<CategoryRoute />} />
 
                 {/* Product PDP */}
                 <Route path="/product/:slug" element={<ProductRoute />} />

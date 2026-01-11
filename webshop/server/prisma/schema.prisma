@@ -19,13 +19,19 @@ model Product {
   slug        String   @unique
   name        String
   description String?
-  imageUrl    String?  // NEW (optional picture URL/path)
+  imageUrl    String?
+  priceCents  Int      @default(0) // ✅ NEW
+  currency    String   @default("SEK") // ✅ NEW
   isActive    Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   categories ProductCategory[]
   attributes ProductAttribute[]
+
+  // ✅ add these
+  cartItems  CartItem[]
+  orderItems OrderItem[]
 
   @@index([isActive])
 }
@@ -128,4 +134,81 @@ model AdminUser {
   role      AdminRole
   isActive  Boolean   @default(true)
   createdAt DateTime  @default(now())
+}
+
+model Cart {
+  id        String   @id @default(uuid())
+  userId    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  items CartItem[]
+
+  @@index([userId])
+}
+
+model CartItem {
+  id        String @id @default(uuid())
+  cartId    String
+  productId String
+  quantity  Int
+
+  cart    Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Restrict)
+
+  @@unique([cartId, productId])
+}
+
+enum OrderStatus {
+  PENDING_PAYMENT
+  PAID
+  CANCELLED
+  PAYMENT_FAILED
+}
+
+model Order {
+  id         String      @id @default(uuid())
+  userId     String?
+  status     OrderStatus @default(PENDING_PAYMENT)
+  currency   String
+  totalCents Int
+  createdAt  DateTime    @default(now())
+
+  items    OrderItem[]
+  payments Payment[]
+}
+
+model OrderItem {
+  id             String  @id @default(uuid())
+  orderId        String
+  productId      String
+  name           String // snapshot
+  unitPriceCents Int // snapshot
+  quantity       Int
+  imageUrl       String? // snapshot (optional)
+
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Restrict)
+}
+
+enum PaymentStatus {
+  INITIATED
+  SUCCEEDED
+  FAILED
+}
+
+model Payment {
+  id                    String        @id @default(uuid())
+  orderId               String
+  provider              String // "stripe"
+  status                PaymentStatus @default(INITIATED)
+  amountCents           Int
+  currency              String
+  stripePaymentIntentId String?       @unique
+  rawEvent              Json?
+  createdAt             DateTime      @default(now())
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
 }
